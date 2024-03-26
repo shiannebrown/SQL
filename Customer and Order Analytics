@@ -1,19 +1,40 @@
-# In this SQL, I cleaned and utilized multiple tables of data to quantify statistics about customer and order info.
+# In this project, I cleaned and queried multiple tables of sales and customer data to quantify statistics
+about customer and order info.
 
-#1. How many orders were placed in January?
+# SAMPLE 5 rows of one of the tables used:
+141234	iPhone	1	700	01/22/19 21:25	944 Walnut St, Boston, MA 02215
+141235	Lightning Charging Cable	1	14.95	01/28/19 14:15	185 Maple St, Portland, OR 97035
+141236	Wired Headphones	2	11.99	01/17/19 13:33	538 Adams St, San Francisco, CA 94016
+141237	27in FHD Monitor	1	149.99	01/05/19 20:33	738 10th St, Los Angeles, CA 90001
+141238	Wired Headphones	1	11.99	01/25/19 11:59	387 10th St, Austin, TX 73301
+
+# SAMPLE 5 rows of the customers table used:
+141234	59333463
+141235	28160640
+141236	46606428
+141237	84088172
+141238	33912486
+
+### Input 1. How many orders were placed in January?
 SELECT COUNT(orderid)
 FROM BIT_DB.JanSales
 WHERE length(orderid) = 6
 AND orderid <> 'Order ID';
 
-#2. How many orders in January were for an iPhone?
+# Output 1
+9681
+
+### Input 2. How many orders in January were for an iPhone?
 SELECT COUNT(orderid)
 FROM BIT_DB.JanSales
 WHERE Product='iPhone'
 AND length(orderid) = 6
 AND orderid <> 'Order ID';  
 
-#3. Select the account numbers for all orders placed in Febraury.
+# Output 2
+379
+
+### Input 3. Select the account numbers for all orders placed in Febraury.
 SELECT distinct acctnum
 FROM BIT_DB.customers
 JOIN BIT_DB.FebSales
@@ -21,24 +42,59 @@ ON customers.order_id = FebSales.orderID
 WHERE length(orderID) = 6
 AND orderID <> 'Order ID';
 
-#4. What was the cheapest product sold in January, and what was the price?
+# Output 3 (limit 5)
+40161414
+54428584
+59221952
+88742323
+78191203
+
+### Input 4. What was the cheapest product sold in January, and what was the price?
 SELECT product, MIN(price)
 FROM BIT_DB.JanSales;
 
-#5. What was the total revenue for each product sold in Janaury?
+# Output 4
+AAA Batteries (4-pack)	2.99
+
+### Input 5. What was the total revenue for each product sold in Janaury?
 SELECT SUM(quantity)*price as Revenue
 ,product
 FROM BIT_DB.JanSales
+WHERE product <> 'Product'
 GROUP BY product;
 
-#6. Which products were sold in February at 548 Lincoln St, Seattle, WA 98101, how many of each were sold, and what was the total revenue?
+# Output 5
+23647.85	20in Monitor
+121676.88	27in 4K Gaming Monitor
+62845.810000000005	27in FHD Monitor
+119316.86	34in Ultrawide Monitor
+5472	AA Batteries (4-pack)
+4772.04	AAA Batteries (4-pack)
+122100	Apple Airpods Headphones
+65893.41	Bose SoundSport Headphones
+72900	Flatscreen TV
+190800	Google Phone
+23400	LG Dryer
+25200	LG Washing Machine
+17207.45	Lightning Charging Cable
+399500	Macbook Pro Laptop
+216997.83000000002	ThinkPad Laptop
+15343.8	USB-C Charging Cable
+50000	Vareebadd Phone
+12961.19	Wired Headphones
+265300	iPhone
+
+### Input 6. Which products were sold in February at 548 Lincoln St, Seattle, WA 98101, how many of each were sold, and what was the total revenue?
 SELECT product, quantity
 , SUM(quantity)*price 
 AS total_revenue
 FROM BIT_DB.FebSales
 WHERE location = '548 Lincoln St, Seattle, WA 98101';
 
-#7. How many customers ordered more than 2 products at a time, and what was the average amount spent for those customers? 
+# Output 6
+AA Batteries (4-pack)	2	7.68
+
+### Input 7. How many customers ordered more than 2 products at a time, and what was the average amount spent for those customers? 
 select 
 SELECT COUNT(distinct acctnum) customers
 , AVG(quantity*price) avg_spent
@@ -49,8 +105,32 @@ WHERE Feb.quantity > 2
 AND Feb.orderID <> 'Order ID'
 AND length(Feb.orderID) = 6;
 
-#8. List all products sold in LA in February and include how many of each item were sold.
+# Output 7
+278	13.82794964028773
+
+### Input 8. List all products sold in LA in February and include how many of each item were sold.
 SELECT product, SUM(quantity)
 FROM BIT_DB.FebSales
 WHERE location like '%Los Angeles%'
 GROUP BY product;
+
+# Output 8
+20in Monitor	44
+27in 4K Gaming Monitor	70
+27in FHD Monitor	81
+34in Ultrawide Monitor	63
+AA Batteries (4-pack)	293
+AAA Batteries (4-pack)	351
+Apple Airpods Headphones	140
+Bose SoundSport Headphones	131
+Flatscreen TV	36
+Google Phone	52
+LG Dryer	5
+LG Washing Machine	6
+Lightning Charging Cable	243
+Macbook Pro Laptop	46
+ThinkPad Laptop	42
+USB-C Charging Cable	271
+Vareebadd Phone	25
+Wired Headphones	191
+iPhone	71
